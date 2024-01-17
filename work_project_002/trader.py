@@ -107,11 +107,9 @@ class MacdRsiStochStrategy(bt.Strategy):
             self.log(f'Part Status: {order.getstatusname()}. TransId={order.ref}')
         elif order.status == bt.Order.Completed:  # Если заявка полностью исполнена
             if order.isbuy():  # Заявка на покупку
-                self.log(f'Bought @{order.executed.price:.5f}, Cost={order.executed.value:.5f}, '
-                         f'Comm={order.executed.comm:.5f}')
+                self.log(f'Bought @{order.executed.price:.5f}, Cost={order.executed.value:.5f}, Comm={order.executed.comm:.5f}')
             elif order.issell():  # Заявка на продажу
-                self.log(f'Sold @{order.executed.price:.5f}, Cost={order.executed.value:.5f}, '
-                         f'Comm={order.executed.comm:.5f}')
+                self.log(f'Sold @{order.executed.price:.5f}, Cost={order.executed.value:.5f}, Comm={order.executed.comm:.5f}')
 
     def notify_trade(self, trade):
         """Изменение статуса позиции"""
@@ -120,13 +118,13 @@ class MacdRsiStochStrategy(bt.Strategy):
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
-    cerebro = bt.Cerebro(stdstats=False)  # Инициируем "движок" BackTrader. Стандартная статистика сделок и кривой
-    # доходности не нужна
+    cerebro = bt.Cerebro(stdstats=False)  # Инициируем "движок" BackTrader. Стандартная статистика сделок и
+    # кривой доходности не нужна
 
     clientCode = 'Код клиента'  # Код клиента (присваивается брокером)
     firmId = 'Код фирмы'  # Код фирмы (присваивается брокером)
     # symbol = 'TQBR.SBER'  # Тикер
-    symbol = 'VBZ3'  # Для фьючерсов: <Код тикера><Месяц экспирации: 3-H, 6-M, 9-U, 12-Z><Последняя цифра года>
+    symbol = 'VBH4'  # Для фьючерсов: <Код тикера><Месяц экспирации: 3-H, 6-M, 9-U, 12-Z><Последняя цифра года>
 
     cerebro.addstrategy(MacdRsiStochStrategy)  # Добавляем торговую систему
     store = QKStore()  # Хранилище QUIK
@@ -134,14 +132,14 @@ if __name__ == '__main__':  # Точка входа при запуске это
                              LimitKind=2, CurrencyCode='SUR', IsFutures=False)  # Брокер со счетом фондового рынка РФ
     # broker = store.getbroker(use_positions=False)  # Брокер со счетом по умолчанию (срочный рынок РФ)
     cerebro.setbroker(broker)  # Устанавливаем брокера
-    data = store.getdata(dataname=symbol, timeframe=bt.TimeFrame.Minutes, compression=1,
-                         fromdate=datetime(2023, 9, 5), sessionstart=time(7, 0), LiveBars=True)  # Исторические и новые
-    # минутные бары за все время
+    data = store.getdata(dataname=symbol, timeframe=bt.TimeFrame.Minutes, compression=15,
+                         fromdate=datetime(2023, 9, 5), sessionstart=time(7, 0), LiveBars=True)  # Исторические и
+    # новые минутные бары за все время
     cerebro.adddata(data)  # Добавляем данные
 
-    data1 = store.getdata(dataname=symbol, timeframe=bt.TimeFrame.Minutes, compression=15,
-                         fromdate=datetime(2023, 9, 5), sessionstart=time(7, 0), LiveBars=True)  # Исторические и новые
-    # минутные бары за все время
+    data1 = store.getdata(dataname=symbol, timeframe=bt.TimeFrame.Minutes, compression=240,
+                         fromdate=datetime(2023, 9, 5), sessionstart=time(7, 0), LiveBars=True)  # Исторические и
+    # новые минутные бары за все время
     cerebro.adddata(data1)
 
     cerebro.addsizer(bt.sizers.FixedSize, stake=100000)  # Кол-во акций для покупки/продажи
